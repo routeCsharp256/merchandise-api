@@ -5,8 +5,8 @@ namespace CSharpCourse.MerchandiseApi.Domain.AggregationModels.MerchandiseReques
     public class RequestStatus : Enumeration
     {
         public static RequestStatus New = new(1, "new");
-        public static RequestStatus InWork = new(2, "in_work");
-        public static RequestStatus Done = new(3, "done");
+        public static RequestStatus Done = new(2, "done");
+        public static RequestStatus Processing = new(3, "processing");
         public static RequestStatus Decline = new(4, "decline");
         
         public RequestStatus(int id, string name) : base(id, name)

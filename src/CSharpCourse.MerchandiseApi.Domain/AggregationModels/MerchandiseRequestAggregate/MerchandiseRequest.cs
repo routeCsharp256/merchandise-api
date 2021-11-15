@@ -7,19 +7,21 @@ namespace CSharpCourse.MerchandiseApi.Domain.AggregationModels.MerchandiseReques
 {
     public class MerchandiseRequest : Entity
     {
-        public MerchandiseRequest(SkuPreset skuPreset, 
+        public MerchandiseRequest(int id,
+            SkuPreset skuPreset, 
             Employee employee, 
             RequestStatus requestStatus, 
             CreateDate createDate, 
             GiveOutDate giveOutDate)
         {
+            Id = id;
             SkuPreset = skuPreset;
             Employee = employee;
             RequestStatus = requestStatus;
             CreateDate = createDate;
             GiveOutDate = giveOutDate;
         }
-
+        
         public SkuPreset SkuPreset { get; }
         public Employee Employee { get; }
         public RequestStatus RequestStatus { get; }
