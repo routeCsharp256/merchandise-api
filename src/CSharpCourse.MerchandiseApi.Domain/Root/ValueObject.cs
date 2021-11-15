@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace CSharpCourse.MerchandiseApi.Domain.Models
+namespace CSharpCourse.MerchandiseApi.Domain.Root
 {
+    /// <summary>
+    /// Represents base value object class
+    /// Source: https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/implement-value-objects
+    /// </summary>
     public abstract class ValueObject
     {
         protected static bool EqualOperator(ValueObject left, ValueObject right)
@@ -11,12 +15,13 @@ namespace CSharpCourse.MerchandiseApi.Domain.Models
             {
                 return false;
             }
+
             return ReferenceEquals(left, null) || left.Equals(right);
         }
 
         protected static bool NotEqualOperator(ValueObject left, ValueObject right)
         {
-            return !(EqualOperator(left, right));
+            return !EqualOperator(left, right);
         }
 
         protected abstract IEnumerable<object> GetEqualityComponents();
@@ -34,15 +39,8 @@ namespace CSharpCourse.MerchandiseApi.Domain.Models
         }
 
         public override int GetHashCode()
-        {
-            return GetEqualityComponents()
+            => GetEqualityComponents()
                 .Select(x => x != null ? x.GetHashCode() : 0)
                 .Aggregate((x, y) => x ^ y);
-        }
-
-        public ValueObject GetCopy()
-        {
-            return MemberwiseClone() as ValueObject;
-        }
     }
 }

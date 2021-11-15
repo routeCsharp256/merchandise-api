@@ -1,10 +1,16 @@
 ﻿using System.Collections.Generic;
 using MediatR;
 
-namespace CSharpCourse.MerchandiseApi.Application.Commands
+namespace CSharpCourse.MerchandiseApi.Application.Commands.NewMerchandizeAppeared
 {
-    public class NewMerchandiseAppearedCommand : IRequest
+    /// <summary>
+    /// Прибыл новый набор мерча
+    /// </summary>
+    public class NewMerchandiseAppearedCommand : IRequest<Unit>
     {
-        public IReadOnlyCollection<long> Skus { get; set; }
+        /// <summary>
+        /// Набор доступных артикулов
+        /// </summary>
+        public IReadOnlyCollection<long> SkuCollection { get; init; }
     }
 }

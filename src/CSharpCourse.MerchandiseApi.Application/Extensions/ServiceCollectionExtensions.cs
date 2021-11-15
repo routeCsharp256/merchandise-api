@@ -9,7 +9,6 @@ namespace CSharpCourse.MerchandiseApi.Application.Extensions
         public static IServiceCollection AddApplicationLayer(this IServiceCollection services)
         {
             services.AddMediatR(typeof(GetRequestsByEmployeeQueryHandler).Assembly);
-            
             return services;
         }
     }

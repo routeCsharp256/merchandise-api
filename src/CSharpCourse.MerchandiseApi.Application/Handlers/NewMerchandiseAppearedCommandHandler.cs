@@ -2,56 +2,47 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CSharpCourse.MerchandiseApi.Application.Commands;
-using CSharpCourse.MerchandiseApi.Domain.AggregationModels.MerchandiseRequestAggregate;
+using CSharpCourse.MerchandiseApi.Application.Commands.NewMerchandizeAppeared;
+using CSharpCourse.MerchandiseApi.Domain.AggregationModels.MerchandiseRequest;
 using MediatR;
 
 namespace CSharpCourse.MerchandiseApi.Application.Handlers
 {
     public class NewMerchandiseAppearedCommandHandler : IRequestHandler<NewMerchandiseAppearedCommand>
     {
-        private readonly IMerchandiseRepository _repository;
+        private readonly IMerchandiseRepository _merchandiseRepository;
+        private readonly IStockApiIntegration _stockApiIntegration;
 
-        public NewMerchandiseAppearedCommandHandler(IMerchandiseRepository repository)
+        public NewMerchandiseAppearedCommandHandler(IMerchandiseRepository merchandiseRepository, IStockApiIntegration stockApiIntegration)
         {
-            _repository = repository;
+            _merchandiseRepository = merchandiseRepository;
+            _stockApiIntegration = stockApiIntegration;
         }
 
         public async Task<Unit> Handle(NewMerchandiseAppearedCommand request, CancellationToken cancellationToken)
         {
-            var allProcessingRequests = await _repository.GetAllProcessingRequests(cancellationToken);
+            var allProcessingRequests = await _merchandiseRepository.GetAllProcessingRequestsAsync(cancellationToken);
+
             allProcessingRequests = allProcessingRequests
-                .Where(it => it.SkuPreset.Skus.Any(sku => request.Skus.Contains(sku.Value)))
-                .OrderBy(it => it.CreateDate)
+                .Where(it => it.SkuPreset.SkuCollection.Any(sku => request.SkuCollection.Contains(sku.Value)))
+                .OrderBy(it => it.CreatedAt)
                 .ToArray();
 
             foreach (var processingRequest in allProcessingRequests)
             {
+
+                var alreadyExistsRequests = await _merchandiseRepository
+                    .GetByEmployeeEmailAsync(processingRequest.Employee.Email, cancellationToken);
+
                 // Отправляем запрос на выдачу мерча которая вызывается из сток апи
-            
-                // проверяем что бронь прошла
-                if (true)
-                {
-                    var merchandiseRequestToDone = new MerchandiseRequest(processingRequest.Id,
-                        processingRequest.SkuPreset,
-                        processingRequest.Employee, 
-                        RequestStatus.Done,
-                        processingRequest.CreateDate,
-                        new GiveOutDate(DateTime.Now));
-                    var doneId = await _repository.Create(merchandiseRequestToDone, cancellationToken);
-                
-                    return Unit.Value;
-                }
-                var merchandiseRequestToProcessing = new MerchandiseRequest(processingRequest.Id,
-                    processingRequest.SkuPreset,
-                    processingRequest.Employee, 
-                    RequestStatus.Processing,
-                    processingRequest.CreateDate,
-                    new GiveOutDate(null));
-                var processingId = await _repository.Create(merchandiseRequestToProcessing, cancellationToken);
-                
-                return Unit.Value;    
+                var isAvailable =
+                    await _stockApiIntegration.RequestGiveOutAsync(
+                        processingRequest.SkuPreset.SkuCollection.Select(sku => sku.Value),
+                        cancellationToken);
+
+                processingRequest.GiveOut(alreadyExistsRequests, isAvailable, DateTimeOffset.UtcNow);
             }
+
             return Unit.Value;
         }
     }

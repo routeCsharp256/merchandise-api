@@ -2,36 +2,30 @@
 using System.Collections.Generic;
 using MediatR;
 
-namespace CSharpCourse.MerchandiseApi.Domain.Models
+namespace CSharpCourse.MerchandiseApi.Domain.Root
 {
     public abstract class Entity
     {
-        int? _requestedHashCode;
-        public virtual int Id { get; protected set; }
+        private int? _requestedHashCode;
+
+        public virtual long Id { get; protected set; }
 
         private readonly List<INotification> _domainEvents = new();
         
-        public IReadOnlyCollection<INotification> DomainEvents => _domainEvents.AsReadOnly();
+        public IReadOnlyCollection<INotification> DomainEvents
+            => _domainEvents.AsReadOnly();
 
         public void AddDomainEvent(INotification eventItem)
-        {
-            _domainEvents.Add(eventItem);
-        }
+            => _domainEvents.Add(eventItem);
 
         public void RemoveDomainEvent(INotification eventItem)
-        {
-            _domainEvents.Remove(eventItem);
-        }
+            => _domainEvents.Remove(eventItem);
 
         public void ClearDomainEvents()
-        {
-            _domainEvents.Clear();
-        }
+            => _domainEvents.Clear();
 
         public bool IsTransient()
-        {
-            return Id == default(Int32);
-        }
+            => Id == default;
 
         public override bool Equals(object obj)
         {
@@ -54,8 +48,7 @@ namespace CSharpCourse.MerchandiseApi.Domain.Models
         {
             if (!IsTransient())
             {
-                if (!_requestedHashCode.HasValue)
-                    _requestedHashCode = HashCode.Combine(Id, 31);
+                _requestedHashCode ??= HashCode.Combine(Id, 31);
 
                 return _requestedHashCode.Value;
             }
@@ -65,10 +58,7 @@ namespace CSharpCourse.MerchandiseApi.Domain.Models
         }
         public static bool operator ==(Entity left, Entity right)
         {
-            if (Object.Equals(left, null))
-                return (Object.Equals(right, null)) ? true : false;
-            else
-                return left.Equals(right);
+            return left?.Equals(right) ?? object.Equals(right, null);
         }
 
         public static bool operator !=(Entity left, Entity right)

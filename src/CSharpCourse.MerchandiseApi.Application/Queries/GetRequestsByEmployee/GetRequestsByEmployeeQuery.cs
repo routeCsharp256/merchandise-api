@@ -1,9 +1,15 @@
 ﻿using MediatR;
 
-namespace CSharpCourse.MerchandiseApi.Application.Queries
+namespace CSharpCourse.MerchandiseApi.Application.Queries.GetRequestsByEmployee
 {
-    public class GetRequestsByEmployeeQuery : IRequest<GetRequestsByEmployeeQueryResponse>
+    /// <summary>
+    /// Запрос на получение всех запросов на получение мерча для сотрудника
+    /// </summary>
+    public record GetRequestsByEmployeeQuery : IRequest<GetRequestsByEmployeeQueryResponse>
     {
-        public string Email { get; set; }
+        /// <summary>
+        /// Электронная почта сотрудника
+        /// </summary>
+        public string Email { get; init; }
     }
 }

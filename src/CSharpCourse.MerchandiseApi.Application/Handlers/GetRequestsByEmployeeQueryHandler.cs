@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CSharpCourse.MerchandiseApi.Application.Models.DTOs;
-using CSharpCourse.MerchandiseApi.Application.Queries;
-using CSharpCourse.MerchandiseApi.Domain.AggregationModels.MerchandiseRequestAggregate;
+using CSharpCourse.MerchandiseApi.Application.Queries.GetRequestsByEmployee;
+using CSharpCourse.MerchandiseApi.Domain.AggregationModels.MerchandiseRequest;
 using MediatR;
 
 namespace CSharpCourse.MerchandiseApi.Application.Handlers
@@ -13,21 +13,20 @@ namespace CSharpCourse.MerchandiseApi.Application.Handlers
         private readonly IMerchandiseRepository _repository;
 
         public GetRequestsByEmployeeQueryHandler(IMerchandiseRepository repository)
-        {
-            _repository = repository;
-        }
+            => _repository = repository;
 
         public async Task<GetRequestsByEmployeeQueryResponse> Handle(GetRequestsByEmployeeQuery request, CancellationToken cancellationToken)
         {
-            var requests = await _repository.GetByEmployeeEmail(request.Email, cancellationToken);
-            return new GetRequestsByEmployeeQueryResponse()
+            var requests = await _repository.GetByEmployeeEmailAsync(Email.Create(request.Email), cancellationToken);
+
+            return new GetRequestsByEmployeeQueryResponse
             {
-                Items = requests.Select(it => new MerchRequestDataDto()
+                Items = requests.Select(it => new MerchandiseRequestDataDto
                 {
-                    Status = it.RequestStatus.Name,
-                    CreateDate = it.CreateDate.Value,
-                    MerchType = it.SkuPreset.Type.Name,
-                    GiveOutDate = it.GiveOutDate.Value
+                    Status = it.Status.Name,
+                    CreatedAt = it.CreatedAt,
+                    Type = it.SkuPreset.Type.Name,
+                    GaveOutAt = it.GaveOutAt,
                 }).ToArray()
             };
         }

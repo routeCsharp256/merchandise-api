@@ -1,13 +1,25 @@
-﻿using CSharpCourse.MerchandiseApi.Domain.Models.Enums;
-using MediatR;
+﻿using MediatR;
 
-namespace CSharpCourse.MerchandiseApi.Application.Commands
+namespace CSharpCourse.MerchandiseApi.Application.Commands.GiveOutMerchandise
 {
-    public class GiveOutMerchandiseCommand : IRequest
+    /// <summary>
+    /// Команда на создание запроса на выдачу мерча
+    /// </summary>
+    public record GiveOutMerchandiseCommand : IRequest<Unit>
     {
-        public string EmployeeEmail { get; set; }
-        public ClothingSize EmployeeClothingSize { get; set; }
-        // ССылка из общей либы которая core lib
-        public string Type { get; set; }
+        /// <summary>
+        /// Емейл сотрудника
+        /// </summary>
+        public string Email { get; init; }
+
+        /// <summary>
+        /// Размер одежды
+        /// </summary>
+        public string ClothingSize { get; init; }
+
+        /// <summary>
+        /// Тип набора выдаваемого мерча
+        /// </summary>
+        public string Type { get; init; }
     }
 }

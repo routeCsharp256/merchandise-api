@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace CSharpCourse.MerchandiseApi.Domain.Models
+namespace CSharpCourse.MerchandiseApi.Domain.Root
 {
+    /// <summary>
+    /// Represents enumeration abstract class
+    /// Source: https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/enumeration-classes-over-enum-types
+    /// </summary>
     public abstract class Enumeration : IComparable
     {
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public int Id { get; private set; }
+        public int Id { get; }
 
         protected Enumeration(int id, string name) => (Id, Name) = (id, name);
 
@@ -29,13 +33,23 @@ namespace CSharpCourse.MerchandiseApi.Domain.Models
                 return false;
             }
 
-            var typeMatches = GetType().Equals(obj.GetType());
+            var typeMatches = GetType() == obj.GetType();
             var valueMatches = Id.Equals(otherValue.Id);
 
             return typeMatches && valueMatches;
         }
 
-        public int CompareTo(object other) => Id.CompareTo(((Enumeration)other).Id);
+        protected bool Equals(Enumeration other)
+        {
+            return Name == other.Name && Id == other.Id;
+        }
 
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, Id);
+        }
+
+        public int CompareTo(object other) => Id.CompareTo(((Enumeration)other).Id);
     }
 }
