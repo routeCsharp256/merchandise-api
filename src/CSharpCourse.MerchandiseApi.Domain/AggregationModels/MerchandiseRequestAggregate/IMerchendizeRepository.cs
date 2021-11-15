@@ -13,5 +13,7 @@ namespace CSharpCourse.MerchandiseApi.Domain.AggregationModels.MerchandiseReques
 
         Task<IReadOnlyCollection<MerchandiseRequest>> GetByEmployeeEmail(string email,
             CancellationToken cancellationToken);
+
+        Task<IReadOnlyCollection<MerchandiseRequest>> GetAllProcessingRequests(CancellationToken cancellationToken);
     }
 }

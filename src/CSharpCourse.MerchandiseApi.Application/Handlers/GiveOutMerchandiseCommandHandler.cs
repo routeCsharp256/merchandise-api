@@ -49,7 +49,7 @@ namespace CSharpCourse.MerchandiseApi.Application.Handlers
                         new Employee(eMail: request.EmployeeEmail, 
                             size: request.EmployeeClothingSize.ToString()), 
                         RequestStatus.Decline,
-                        new CreateDate(DateTime.Now),
+                        merchandiseRequest.CreateDate,
                         new GiveOutDate(null));
                     var declineId = await _merchandiseRepository.Create(merchandiseRequest, cancellationToken);
                     
@@ -67,8 +67,8 @@ namespace CSharpCourse.MerchandiseApi.Application.Handlers
                     new Employee(eMail: request.EmployeeEmail, 
                         size: request.EmployeeClothingSize.ToString()), 
                     RequestStatus.Done,
-                    new CreateDate(DateTime.Now),
-                    new GiveOutDate(null));
+                    merchandiseRequest.CreateDate,
+                    new GiveOutDate(DateTime.Now));
                 var doneId = await _merchandiseRepository.Create(merchandiseRequest, cancellationToken);
                 
                 return Unit.Value;
@@ -78,7 +78,7 @@ namespace CSharpCourse.MerchandiseApi.Application.Handlers
                 new Employee(eMail: request.EmployeeEmail, 
                     size: request.EmployeeClothingSize.ToString()), 
                 RequestStatus.Processing,
-                new CreateDate(DateTime.Now),
+                merchandiseRequest.CreateDate,
                 new GiveOutDate(null));
             var processingId = await _merchandiseRepository.Create(merchandiseRequest, cancellationToken);
                 
