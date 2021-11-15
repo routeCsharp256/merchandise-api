@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpCourse.MerchandiseApi.Application\CSharpCourse.MerchandiseApi.Application.csproj" />
+    <ProjectReference Include="..\CSharpCourse.MerchandiseApi.Domain\CSharpCourse.MerchandiseApi.Domain.csproj" />
+    <ProjectReference Include="..\CSharpCourse.MerchandiseApi.Infrastructure\CSharpCourse.MerchandiseApi.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
