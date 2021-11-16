@@ -32,9 +32,10 @@ namespace CSharpCourse.MerchandiseApi.Application.Handlers
             var alreadyExistsRequests = await _merchandiseRepository
                 .GetByEmployeeEmailAsync(Email.Create(request.Email), cancellationToken);
 
-            var newMerchandiseRequest = new MerchandiseRequest(
+            var newMerchandiseRequest = MerchandiseRequest.Create(
                 skuPreset: preset,
                 employee: new Employee(Email.Create(request.Email), ClothingSize.Parse(request.ClothingSize)),
+                alreadyExistedRequest: alreadyExistsRequests,
                 createdAt: DateTimeOffset.UtcNow);
 
             var newId = await _merchandiseRepository.CreateAsync(newMerchandiseRequest, cancellationToken);
@@ -50,7 +51,7 @@ namespace CSharpCourse.MerchandiseApi.Application.Handlers
             var isSkuPackAvailable =
                 await _stockApiIntegration.RequestGiveOutAsync(preset.SkuCollection.Select(sku => sku.Value), cancellationToken);
 
-            newMerchandiseRequest.GiveOut(alreadyExistsRequests, isSkuPackAvailable, DateTimeOffset.UtcNow);
+            newMerchandiseRequest.GiveOut(isSkuPackAvailable, DateTimeOffset.UtcNow);
 
             await _merchandiseRepository.UpdateAsync(newMerchandiseRequest, cancellationToken);
 

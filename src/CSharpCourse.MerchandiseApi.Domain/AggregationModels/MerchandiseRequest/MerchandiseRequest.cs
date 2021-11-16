@@ -48,7 +48,7 @@ namespace CSharpCourse.MerchandiseApi.Domain.AggregationModels.MerchandiseReques
         /// </summary>
         public DateTimeOffset? GaveOutAt { get; private set; }
 
-        public MerchandiseRequest(SkuPreset.SkuPreset skuPreset, Employee employee, DateTimeOffset createdAt)
+        private MerchandiseRequest(SkuPreset.SkuPreset skuPreset, Employee employee, DateTimeOffset createdAt)
         {
             SkuPreset = skuPreset;
             Employee = employee;
@@ -56,21 +56,31 @@ namespace CSharpCourse.MerchandiseApi.Domain.AggregationModels.MerchandiseReques
             Status = MerchandiseRequestStatus.New;
         }
 
+        public static MerchandiseRequest Create(
+            SkuPreset.SkuPreset skuPreset,
+            Employee employee,
+            IReadOnlyCollection<MerchandiseRequest> alreadyExistedRequest,
+            DateTimeOffset createdAt)
+        {
+            var newRequest = new MerchandiseRequest(skuPreset, employee, createdAt);
+
+            if (!newRequest.CheckAbilityToGiveOut(alreadyExistedRequest, createdAt))
+            {
+                throw new DomainException("Merchandize is unable to gave out");
+            }
+
+            return newRequest;
+        }
+
         /// <summary>
         /// Выдаем мерч
         /// </summary>
         public void GiveOut(
-            IReadOnlyCollection<MerchandiseRequest> alreadyExistedRequest,
             bool isAvailable,
             DateTimeOffset gaveOutAt)
         {
             if (Equals(Status, MerchandiseRequestStatus.New) || Equals(Status, MerchandiseRequestStatus.Processing))
             {
-                if (!CheckAbilityToGiveOut(alreadyExistedRequest, gaveOutAt))
-                {
-                    throw new DomainException("Merchandize is unable to gave out");
-                }
-
                 if (isAvailable)
                 {
 

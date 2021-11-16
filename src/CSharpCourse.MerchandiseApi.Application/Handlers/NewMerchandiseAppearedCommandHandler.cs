@@ -30,17 +30,13 @@ namespace CSharpCourse.MerchandiseApi.Application.Handlers
 
             foreach (var processingRequest in allProcessingRequests)
             {
-
-                var alreadyExistsRequests = await _merchandiseRepository
-                    .GetByEmployeeEmailAsync(processingRequest.Employee.Email, cancellationToken);
-
                 // Отправляем запрос на выдачу мерча которая вызывается из сток апи
                 var isAvailable =
                     await _stockApiIntegration.RequestGiveOutAsync(
                         processingRequest.SkuPreset.SkuCollection.Select(sku => sku.Value),
                         cancellationToken);
 
-                processingRequest.GiveOut(alreadyExistsRequests, isAvailable, DateTimeOffset.UtcNow);
+                processingRequest.GiveOut(isAvailable, DateTimeOffset.UtcNow);
             }
 
             return Unit.Value;
